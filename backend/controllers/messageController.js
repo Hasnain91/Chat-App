@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const Message = require("../models/messageModel");
+const cloudinary = require("../lib/cloudinary");
 
 // Get all the users to display in the sidebar
 const getUsersForSidebar = async (req, res) => {
