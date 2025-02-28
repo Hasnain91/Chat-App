@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { toast } from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { Flag } from "lucide-react";
+import { useAuthStore } from "./useAuthStore";
 
 export const useChatStore = create((set, get) => ({
   messages: [],
@@ -51,6 +52,30 @@ export const useChatStore = create((set, get) => ({
       toast.error(error.response?.data?.message);
       console.log("Error in useChatStore in getMessages : ", error);
     }
+  },
+
+  // real-time update of messages when we open a  chat
+  subscribeToMessages: () => {
+    const { selectedUser } = get();
+    if (!selectedUser) return;
+
+    const socket = useAuthStore.getState().socket;
+
+    // Listen to newMessage event from the server
+    // todo: will have some issues, optimize it later
+    socket.on("newMessage", (newMessage) => {
+      set({
+        messages: [...get().messages, newMessage],
+      });
+    });
+  },
+
+  // unsubscribe from messages when we logout or close the window
+  unsubscribeFromMessages: () => {
+    const socket = useAuthStore.getState().socket;
+
+    // turn off the listener for newMessage event, which is coming from the server
+    socket.off("newMessage");
   },
 
   // will have some kind of error, so will optimize later

@@ -6,9 +6,9 @@ const cors = require("cors");
 const connectDB = require("./config/db.js");
 const authRoutes = require("./routes/authRoutes.js");
 const messageRoutes = require("./routes/messageRoutes.js");
+const { io, app, server } = require("./lib/socket.js");
 
 dotenv.config();
-const app = express();
 
 const PORT = process.env.PORT;
 
@@ -24,7 +24,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server started running on port ${PORT}`);
   connectDB();
 });
