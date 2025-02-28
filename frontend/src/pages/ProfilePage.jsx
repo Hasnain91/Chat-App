@@ -1,10 +1,15 @@
 import { Camera, Mail, MailCheck, MailIcon, User } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImage, setSelectedImage] = useState(null);
+
+  //for debugging
+  // useEffect(() => {
+  //   console.log("authUser in ProfilePage.js is: ", { authUser });
+  // }, [authUser]);
 
   const handleImageUplaod = async (e) => {
     const file = e.target.files[0];
@@ -92,7 +97,12 @@ const ProfilePage = () => {
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between py-2 border-b border-zinc-700">
                 <span>Member Since</span>
-                <span>{authUser?.createdAt?.split("T")[0]}</span>
+                {/* <span>{authUser?.createdAt?.split("T")[0]}</span> */}
+                <span>
+                  {authUser?.createdAt
+                    ? authUser.createdAt.split("T")[0]
+                    : "N/A"}
+                </span>
               </div>
               <div className="flex items-center justify-between py-2">
                 <span>Account Status</span>

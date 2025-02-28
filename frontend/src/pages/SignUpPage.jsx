@@ -21,24 +21,56 @@ const SignUpPage = () => {
     password: "",
   });
 
+  const [errors, setErrors] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+
   const { signup, isSigningUp } = useAuthStore();
 
-  const validatForm = () => {
-    if (!formData.fullName.trim()) return toast.error("Full Name is required");
-    if (!formData.email.trim()) return toast.error("Email is required");
-    if (!/\S+@\S+\.\S+/.test(formData.email))
-      return toast.error("Invalid email format");
-    if (!formData.password) return toast.error("Password is required");
-    if (formData.password.length < 6)
-      return toast.error("Password must be at least 6 characters");
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {
+      fullName: "",
+      email: "",
+      password: "",
+    };
+    // if (!formData.fullName.trim()) return toast.error("Full Name is required");
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full Name is required";
+      isValid = false;
+    }
+    // if (!formData.email.trim()) return toast.error("Email is required");
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Invalid email format.";
+      isValid = false;
+    }
+    // if (!/\S+@\S+\.\S+/.test(formData.email))
+    //   return toast.error("Invalid email format");
 
-    return true;
+    // if (!formData.password) return toast.error("Password is required");
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be atleast 6 characters";
+      isValid = false;
+    }
+    // if (formData.password.length < 6)
+    //   return toast.error("Password must be at least 6 characters");
+
+    setErrors(newErrors);
+    return isValid;
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    const success = validatForm();
-
-    if (success === true) signup(formData);
+    const success = validateForm();
+    if (success) signup(formData);
+    //  if (success === true) signup(formData);
   };
 
   return (
@@ -71,14 +103,21 @@ const SignUpPage = () => {
                 </div>
                 <input
                   type="text"
-                  className={`input innput-bordered w-full pl-10 border-gray-500`}
+                  className={`input innput-bordered w-full pl-10 border-gray-500 ${
+                    errors.fullName ? "border-red-500" : ""
+                  }`}
                   placeholder="Jhon Doe"
                   value={formData.fullName}
-                  onChange={(e) =>
-                    setFormData({ ...formData, fullName: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, fullName: e.target.value });
+                    setErrors({ ...errors, fullName: "" });
+                  }}
                 />
               </div>
+              {/* Display error if not validated */}
+              {errors.fullName && (
+                <p className="text-sm mt-1 text-red-500">{errors.fullName}</p>
+              )}
             </div>
 
             <div className="form-control">
@@ -91,14 +130,21 @@ const SignUpPage = () => {
                 </div>
                 <input
                   type="email"
-                  className={`input innput-bordered w-full pl-10 border-gray-500`}
+                  className={`input innput-bordered w-full pl-10 border-gray-500 ${
+                    errors.email ? "border-red-500" : ""
+                  }`}
                   placeholder="name@example.com"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    setErrors({ ...errors, email: "" });
+                  }}
                 />
               </div>
+              {/* Display error if not validated */}
+              {errors.email && (
+                <p className="text-sm mt-1 text-red-500">{errors.email}</p>
+              )}
             </div>
 
             <div className="form-control">
@@ -111,12 +157,15 @@ const SignUpPage = () => {
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className={`input innput-bordered w-full pl-10 border-gray-500`}
+                  className={`input innput-bordered w-full pl-10 border-gray-500 ${
+                    errors.password ? "border-red-500" : ""
+                  }`}
                   placeholder="●●●●●●"
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    setErrors({ ...errors, password: "" });
+                  }}
                 />
                 <button
                   type="button "
@@ -130,6 +179,10 @@ const SignUpPage = () => {
                   )}
                 </button>
               </div>
+              {/* Display error if not validated */}
+              {errors.password && (
+                <p className="text-sm mt-1 text-red-500">{errors.password}</p>
+              )}
             </div>
 
             <button

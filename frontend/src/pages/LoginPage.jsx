@@ -11,11 +11,42 @@ const LoginPage = () => {
     password: "",
   });
 
+  const [errors, setErrors] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
+
   const { login, isLoggingIn } = useAuthStore();
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {
+      email: "",
+      password: "",
+    };
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Please provide an email";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+      isValid = false;
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Please provide a password";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    login(formData);
+    const success = validateForm();
+    if (success) login(formData);
   };
 
   return (
@@ -49,14 +80,21 @@ const LoginPage = () => {
                 </div>
                 <input
                   type="email"
-                  className={`input input-bordered w-full pl-10`}
+                  className={`input input-bordered w-full pl-10 ${
+                    errors.email ? "border-red-500 " : ""
+                  }`}
                   placeholder="you@example.com"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    setErrors({ ...errors, email: "" });
+                  }}
                 />
               </div>
+              {/* Display error if not correct */}
+              {errors.email && (
+                <p className="text-sm mt-1 text-red-500">{errors.email}</p>
+              )}
             </div>
 
             <div className="form-control">
@@ -69,12 +107,15 @@ const LoginPage = () => {
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className={`input input-bordered w-full pl-10`}
+                  className={`input input-bordered w-full pl-10 ${
+                    errors.password ? "border-red-500" : ""
+                  }`}
                   placeholder="●●●●●●"
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    setErrors({ ...errors, password: "" });
+                  }}
                 />
                 <button
                   type="button"
@@ -88,6 +129,10 @@ const LoginPage = () => {
                   )}
                 </button>
               </div>
+              {/* Display error if not correct */}
+              {errors.password && (
+                <p className="text-sm mt-1 text-red-500">{errors.password}</p>
+              )}
             </div>
 
             <button
